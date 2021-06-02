@@ -79,19 +79,19 @@ const AddNewDelivery = ({ navigation }) => {
     }
 
     const uid = useSelector(getUserIdSelector)
-    const { isLoading, success } = useSelector(getDeliveryCreationStateSelector)
+    // const { isLoading, success } = useSelector(getDeliveryCreationStateSelector)
 
     const dispatch = useDispatch()
 
     const to = (page) => navigation.navigate(page)
 
-    useEffect(() => {
-        if (success) {
-            dispatch(clearNewDeliveryAction())
-            to(MAIN)
-        }
-        return () => dispatch(clearNewDeliveryAction())
-    }, [success])
+    // useEffect(() => {
+    //     if (success) {
+    //         dispatch(clearNewDeliveryAction())
+    //         to(MAIN)
+    //     }
+    //     return () => dispatch(clearNewDeliveryAction())
+    // }, [success])
 
     const onSubmit = async () => dispatch(createNewDeliveryAction({ sender_uid: uid, ...data }))
 
@@ -120,16 +120,16 @@ const AddNewDelivery = ({ navigation }) => {
                     value={data[DELIVERY_FIELDS.DESCRIPTION.name]}
                     onChange={onChange(DELIVERY_FIELDS.DESCRIPTION.name)}
                 />
-                {isLoading && (
+                {/* {isLoading && (
                     <View style={classes.loading}>
                         <Text>Loading...</Text>
                     </View>
-                )}
+                )} */}
             </View>
 
-            <View style={classes.buttonContainer}>
+            {/* <View style={classes.buttonContainer}>
                 <Button onPress={isLoading ? null : onSubmit}>Submit</Button>
-            </View>
+            </View> */}
         </View>
     )
 }

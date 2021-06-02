@@ -1,72 +1,58 @@
 import {
-    createNewDeliverySuccess,
-    createNewDeliveryStart,
-    getListOfUserDeliverySuccess,
-    getListOfUserDeliveryStart,
-    packageUpdatedSuccess,
-    clearNewDeliverySuccess,
+	createNewDeliverySuccess,
+	createNewDeliveryStart,
+	getALlUserDeliverySuccess,
+	selectDeliverySuccess,
+	selectDeliveryStart,
+	addPackageToDeliverySuccess,
+	getPackageDataSuccess,
 } from '../actions/delivery-action'
 
 import { handleActions } from 'redux-actions'
 
 const defaultState = {
-    deliveryCreation: {
-        isLoading: false,
-        success: false,
-        message: '',
-    },
-    packages: {
-        data: {},
-        success: false,
-        isLoading: false,
-    },
+	deliveryId: '',
+	delivery: {
+		packages: null,
+	},
+	ids: {},
 }
 
-const errorReducer = handleActions(
-    {
-        [createNewDeliveryStart]: (state) => ({
-            ...state,
-            deliveryCreation: {
-                ...state.deliveryCreation,
-                isLoading: true,
-            },
-        }),
-        [createNewDeliverySuccess]: (state, { payload }) => ({
-            ...state,
-            deliveryCreation: {
-                ...state.deliveryCreation,
-                isLoading: false,
-                success: true,
-            },
-        }),
-        [clearNewDeliverySuccess]: (state) => ({
-            ...state,
-            deliveryCreation: defaultState.deliveryCreation,
-        }),
-        [getListOfUserDeliverySuccess]: (state, { payload }) => ({
-            ...state,
-            packages: {
-                isLoading: false,
-                data: payload,
-            },
-        }),
-        [getListOfUserDeliveryStart]: (state) => ({
-            ...state,
-            packages: {
-                isLoading: true,
-                queried: true,
-            },
-        }),
-        [packageUpdatedSuccess]: (state, { payload }) => ({
-            ...state,
-            ...payload,
-            packages: {
-                isLoading: true,
-                data: { ...state.packages.data, ...payload },
-            },
-        }),
-    },
-    defaultState,
+const deliveryReducer = handleActions(
+	{
+		[createNewDeliveryStart]: (state) => ({
+			...state,
+		}),
+		[createNewDeliverySuccess]: (state, { payload }) => ({
+			...state,
+			deliveryId: payload,
+		}),
+		[getALlUserDeliverySuccess]: (state, { payload }) => ({
+			...state,
+			ids: payload,
+		}),
+		[selectDeliveryStart]: (state, { payload }) => ({
+			...state,
+			deliveryId: payload,
+		}),
+		[selectDeliverySuccess]: (state, { payload }) => ({
+			...state,
+			delivery: payload,
+		}),
+		[addPackageToDeliverySuccess]: (state, { payload }) => ({
+			...state,
+			delivery: {
+				packages: { ...state.delivery.packages, ...payload },
+			},
+		}),
+		[getPackageDataSuccess]: (state, { payload }) => ({
+			...state,
+			delivery: {
+				packages: { ...state.delivery.packages, ...payload },
+			},
+		}),
+	},
+	defaultState,
 )
 
-export default errorReducer
+export default deliveryReducer
