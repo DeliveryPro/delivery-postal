@@ -14,6 +14,8 @@ import {
 	UPDATE_PACKAGE_DATA_IN_DELIVERY_SUCCESS,
 	UPDATE_DELIVERY_STATUS_SUCCESS,
 	UPDATE_DELIVERY_STATUS_START,
+	UPDATE_DELIVERY_PACKAGE_STATUS_SUCCESS,
+	UPDATE_DELIVERY_PACKAGE_STATUS_START,
 } from '../types'
 
 import { errorHandler } from './error-action'
@@ -31,7 +33,6 @@ export const createNewDeliveryAction = (uid) => async (dispatch) => {
 	try {
 		const res = await Delivery.createNewDelivery(uid)
 		if (res) {
-			console.log(`res`, res)
 			dispatch(createNewDeliverySuccess(res))
 		}
 	} catch (e) {
@@ -49,7 +50,6 @@ export const getAllUserDeliveryAction = (uid) => async (dispatch) => {
 	try {
 		const res = await Delivery.getAllUserDelivery(uid)
 		if (res) {
-			console.log(`res`, res)
 			dispatch(getALlUserDeliverySuccess(res))
 		}
 	} catch (e) {
@@ -67,7 +67,6 @@ export const selectDeliveryAction = (deliveryId) => async (dispatch) => {
 	try {
 		const res = await Delivery.selectDelivery(deliveryId)
 		if (res) {
-			console.log(`res`, res)
 			dispatch(selectDeliverySuccess(res))
 		}
 	} catch (e) {
@@ -86,7 +85,6 @@ export const addPackageToDeliveryAction = (deliveryId, packageId) => async (disp
 		dispatch(getPackageDataAction(packageId, deliveryId))
 		const res = await Delivery.addPackageToDelivery(deliveryId, packageId)
 		if (res) {
-			console.log(`addPackageToDeliveryAction`, res)
 			dispatch(addPackageToDeliverySuccess(packageId))
 		}
 	} catch (e) {
@@ -104,7 +102,6 @@ export const updatePackageDataInDelivery =
 		try {
 			const res = await Delivery.updatePackageDataInDelivery({ deliveryId, data })
 			if (res) {
-				console.log(`updatePackageDataInDelivery`, res)
 				dispatch(updatePackageDataInDeliverySuccess())
 			}
 		} catch (e) {
@@ -122,7 +119,6 @@ export const getPackageDataAction = (packageId, deliveryId) => async (dispatch) 
 	try {
 		const res = await Delivery.getPackageData(packageId)
 		if (res) {
-			console.log(`getPackageDataAction`, res)
 			dispatch(updatePackageDataInDelivery({ deliveryId, data: res }))
 			dispatch(getPackageDataSuccess(res))
 		}
@@ -141,7 +137,6 @@ export const updateDeliveryStatusAction = (deliveryId, status) => async (dispatc
 	try {
 		const res = await Delivery.updateDeliveryStatus({ deliveryId, status })
 		if (res) {
-			console.log(`updateDeliveryStatusAction`, res)
 			dispatch(updateDeliveryStatusSuccess(res))
 		}
 	} catch (e) {
@@ -149,3 +144,23 @@ export const updateDeliveryStatusAction = (deliveryId, status) => async (dispatc
 		dispatch(errorHandler(CREATE_NEW_DELIVERY_PAGE, e))
 	}
 }
+
+export const updateDeliveryPackageSuccess = createAction(UPDATE_DELIVERY_PACKAGE_STATUS_SUCCESS)
+export const updateDeliveryPackageStart = createAction(UPDATE_DELIVERY_PACKAGE_STATUS_START)
+
+export const updateDeliveryPackageAction =
+	({ deliveryId, packageId, status }) =>
+	async (dispatch) => {
+		logger('updateDeliveryPackageAction', packageId)
+		dispatch(updateDeliveryPackageStart())
+		try {
+			const res = await Delivery.updateDeliveryPackageStatus({ deliveryId, packageId, status })
+			if (res) {
+				console.log(`updateDeliveryPackageAction`, res, { [packageId]: status })
+				dispatch(updateDeliveryPackageSuccess({ packageId, status }))
+			}
+		} catch (e) {
+			logger('updateDeliveryPackageAction', e)
+			dispatch(errorHandler(CREATE_NEW_DELIVERY_PAGE, e))
+		}
+	}

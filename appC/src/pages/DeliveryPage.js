@@ -5,15 +5,19 @@ import Button from '../components/Button'
 import PackageItem from '../components/PackageItem'
 import QrCodeScanner from '../components/QrCodeScanner'
 import { PRIMARY } from '../constants/buttonTypes'
-import { MAIN } from '../constants/pages'
 import STATUSES from '../constants/statuses'
-import { addPackageToDeliveryAction, updateDeliveryStatusAction } from '../redux/actions/delivery-action'
+import {
+	addPackageToDeliveryAction,
+	selectDeliveryAction,
+	updateDeliveryStatusAction,
+} from '../redux/actions/delivery-action'
 import { getDeliveryDataByIdSelector, getDeliveryIdSelector } from '../redux/selectors/delivery-selector'
 
 const useStyles = StyleSheet.create((theme) => ({
 	root: {
 		display: 'flex',
 		flexDirection: 'column',
+		padding: 10,
 	},
 	buttonContainer: {
 		display: 'flex',
@@ -21,9 +25,13 @@ const useStyles = StyleSheet.create((theme) => ({
 		justifyContent: 'center',
 		margin: 10,
 	},
+	titleText: {
+		fontSize: 20,
+		margin: 3,
+	},
 }))
 
-const DeliveryPage = ({navigation}) => {
+const DeliveryPage = ({ navigation }) => {
 	const [isQrScannerOpen, setQrScannerOpen] = useState(false)
 	const classes = useStyles()
 
@@ -38,11 +46,9 @@ const DeliveryPage = ({navigation}) => {
 		setQrScannerOpen(true)
 	}
 
-	const toPage = (page) => navigation.navigation(page)
-
 	const startDelivery = () => {
 		dispatch(updateDeliveryStatusAction(deliveryId, STATUSES.IN_PROGRESS))
-		toPage(MAIN)
+		dispatch(selectDeliveryAction(deliveryId))
 	}
 
 	const validateId = (id) => {
@@ -56,15 +62,17 @@ const DeliveryPage = ({navigation}) => {
 
 	return (
 		<View style={classes.root}>
-			<Text>DeliveryId: {deliveryId}</Text>
-			<Text>Status: {status}</Text>
+			<Text style={classes.titleText}>DeliveryId: {deliveryId}</Text>
+			<Text style={classes.titleText}>Status: {status}</Text>
 
 			{!!Object.keys(packages).length && (
 				<FlatList
 					key={(item) => item.id}
-					data={Object.values(packages)}
-					keyExtractor={(item) => item.id}
-					renderItem={(props) => <PackageItem {...props} />}
+					data={Object.keys(packages)}
+					keyExtractor={({ item }) => item}
+					renderItem={({ item }) => (
+						<PackageItem packageId={item} deliveryId={deliveryId} data={packages[item]} />
+					)}
 				/>
 			)}
 			{status === STATUSES.NEW && (

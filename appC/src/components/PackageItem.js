@@ -1,10 +1,14 @@
-import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, Modal, TouchableHighlight, Toast, ToastAndroid } from 'react-native'
 
 import Package from '../assets/package.svg'
 import { PRIMARY_COLOR, UNDERLAY_COLOR } from '../constants/colors'
 import Minus from '../assets/minus.svg'
 import STATUSES from '../constants/statuses'
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants/screen'
+import QrCodeScanner from './QrCodeScanner'
+import { useDispatch } from 'react-redux'
+import { updateDeliveryPackageAction } from '../redux/actions/delivery-action'
 
 const useStyles = StyleSheet.create((theme) => ({
 	root: {
@@ -50,9 +54,53 @@ const useStyles = StyleSheet.create((theme) => ({
 	description: {
 		color: PRIMARY_COLOR,
 	},
+	modal: {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		backgroundColor: '#eee',
+		marginTop: SCREEN_HEIGHT / 3,
+		marginLeft: SCREEN_WIDTH / 7,
+		marginRight: SCREEN_WIDTH / 7,
+		borderRadius: 5,
+		borderWidth: 1,
+		borderStyle: 'solid',
+	},
+	modalRow: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+	modalItem: {
+		display: 'flex',
+		flexDirection: 'row',
+		backgroundColor: '#eee',
+		justifyContent: 'center',
+		alignItems: 'flex-start',
+		padding: 10,
+		margin: 5,
+		borderRadius: 5,
+		borderColor: PRIMARY_COLOR,
+	},
+	modalItemText: {
+		fontSize: 18,
+		color: PRIMARY_COLOR,
+	},
+	titleText: {
+		alignSelf: 'center',
+		margin: 5,
+		fontSize: 20,
+	},
 }))
 
-const PackageItem = ({ item: { id, address_from, address_to, description, status } }) => {
+const APPROVE_DELIVERY = 'APPROVE_DELIVERY'
+const DECLINE_DELIVERY = 'DECLINE_DELIVERY'
+
+const PackageItem = ({ deliveryId, packageId, data: { id, address_from, address_to, description, status, receiver_uid } }) => {
+	const [packageActionsVisible, setPackageActionsVisible] = useState(false)
+	const [isQrCodeScannerOpen, setQrCodeScannerOpen] = useState(false)
+	const dispatch = useDispatch()
+
 	const {
 		details: { vicinity: from },
 	} = address_from || { details: { vicinity: '' } }
@@ -61,6 +109,7 @@ const PackageItem = ({ item: { id, address_from, address_to, description, status
 	} = address_to || { details: { vicinity: '' } }
 
 	const classes = useStyles()
+
 	if (status === STATUSES.COMPLETED) {
 		classes.root = { ...classes.root, ...classes.inactive }
 		classes.text = { ...classes.text, ...classes.inactive }
@@ -68,25 +117,110 @@ const PackageItem = ({ item: { id, address_from, address_to, description, status
 
 	const codeSplitter = (text) => (text?.length > 26 ? `${text.substr(0, 26).trim()} ...` : text)
 
+	const modalToggle = () => setPackageActionsVisible(!packageActionsVisible)
+
+	const validateId = (uid) => {
+		setQrCodeScannerOpen(false)
+		setPackageActionsVisible(false)
+		console.log('approved', uid, receiver_uid, uid === receiver_uid)
+		if (uid !== receiver_uid) {
+			ToastAndroid.show('User id mismatch', ToastAndroid.SHORT)
+			return
+		}
+		dispatch(updateDeliveryPackageAction({ packageId, status: STATUSES.COMPLETED, deliveryId }))
+	}
+
+	const selectAction = (type) => () => {
+		switch (type) {
+			case APPROVE_DELIVERY:
+				setQrCodeScannerOpen(true)
+			case DECLINE_DELIVERY:
+				console.log('declined')
+		}
+	}
+
+	if (isQrCodeScannerOpen) return <QrCodeScanner cb={validateId} noTorch />
+
 	return (
 		<View style={classes.root}>
-			<View style={classes.item}>
-				<View style={{ ...classes.item, ...classes.idContainer }}>
-					<Package stroke={PRIMARY_COLOR} width={20} />
-					<Text style={{ ...classes.id, ...classes.text }}>{id}</Text>
-				</View>
+			<ModalContent visible={packageActionsVisible} closeModal={modalToggle} selectAction={selectAction} />
+			<TouchableHighlight onPress={modalToggle}>
+				<>
+					<View style={classes.item}>
+						<View style={{ ...classes.item, ...classes.idContainer }}>
+							<Package stroke={PRIMARY_COLOR} width={20} />
+							<Text style={{ ...classes.id, ...classes.text }}>{id}</Text>
+						</View>
 
-				<View style={classes.pathContainer}>
-					<Text style={classes.text}>{from}</Text>
-					<Minus width={60} />
-					<Text style={classes.text}>{to}</Text>
-				</View>
-			</View>
-			<View style={classes.item}>
-				<Text style={{ ...classes.description, ...classes.text }}>{codeSplitter(description)}</Text>
-				{/* <Text style={classes.text}>{status}</Text> */}
-			</View>
+						<View style={classes.pathContainer}>
+							<Text style={classes.text}>{from}</Text>
+							<Minus width={60} />
+							<Text style={classes.text}>{to}</Text>
+						</View>
+					</View>
+					<View style={classes.item}>
+						<Text style={{ ...classes.description, ...classes.text }}>{codeSplitter(description)}</Text>
+						<Text style={classes.text}>{status}</Text>
+					</View>
+				</>
+			</TouchableHighlight>
 		</View>
+	)
+}
+
+const ModalContent = ({ visible, closeModal, selectAction }) => {
+	const [showConfirm, setConfirm] = useState(false)
+	const [confirmAction, setConfirmAction] = useState('')
+	const classes = useStyles()
+
+	const toggleConfirmation = () => setConfirm(!showConfirm)
+
+	const selectItem = (type) => () => {
+		setConfirmAction(type)
+		toggleConfirmation()
+	}
+
+	const declineAction = () => {
+		setConfirmAction('')
+		toggleConfirmation()
+	}
+
+	return (
+		<Modal animationType="slide" transparent={true} visible={visible} onRequestClose={closeModal}>
+			{showConfirm ? (
+				<View style={classes.modal}>
+					{confirmAction === APPROVE_DELIVERY && <Text style={classes.titleText}>Approve delivery? </Text>}
+					{confirmAction === DECLINE_DELIVERY && <Text style={classes.titleText}>Decline delivery? </Text>}
+					<View style={classes.modalRow}>
+						<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectAction(confirmAction)}>
+							<View style={classes.modalItem}>
+								<Text style={classes.modalItemText}>Yes</Text>
+							</View>
+						</TouchableHighlight>
+						<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={declineAction}>
+							<View style={classes.modalItem}>
+								<Text style={classes.modalItemText}>No</Text>
+							</View>
+						</TouchableHighlight>
+					</View>
+				</View>
+			) : (
+				<View style={classes.modal}>
+					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(APPROVE_DELIVERY)}>
+						<View style={classes.modalItem}>
+							{/* <Folder width={30} /> */}
+							<Text style={classes.modalItemText}>Approve</Text>
+						</View>
+					</TouchableHighlight>
+					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(DECLINE_DELIVERY)}>
+						<View style={classes.modalItem}>
+							{/* <Camera width={30} /> */}
+							<Text style={classes.modalItemText}>Decline</Text>
+						</View>
+					</TouchableHighlight>
+				</View>
+			)}
+		</Modal>
 	)
 }
 

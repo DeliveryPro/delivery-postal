@@ -34,6 +34,9 @@ class DeliveryApi {
 
 	updateDeliveryStatus = ({ deliveryId, status }) =>
 		database().ref(`aggregatedDelivery/${deliveryId}`).update({ status })
+
+	updateDeliveryPackageStatus = ({ deliveryId, packageId, status }) =>
+		database().ref(`aggregatedDelivery/${deliveryId}/packages/${packageId}`).update({ status })
 }
 
 export default new DeliveryApi()

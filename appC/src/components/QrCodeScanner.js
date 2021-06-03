@@ -41,10 +41,10 @@ const useStyles = StyleSheet.create((theme) => ({
 	},
 }))
 
-const QrCodeScanner = ({ cb }) => {
+const QrCodeScanner = ({ cb, noTorch }) => {
 	const classes = useStyles()
 	const onSuccess = ({ data }) => cb(data)
-    
+
 	return (
 		<View style={classes.root}>
 			<QRCode
@@ -53,7 +53,7 @@ const QrCodeScanner = ({ cb }) => {
 				bottomViewStyle={classes.noView}
 				onRead={onSuccess}
 				containerStyle={classes.qrContainer}
-				flashMode={RNCamera.Constants.FlashMode.torch}
+				flashMode={noTorch ? '' : RNCamera.Constants.FlashMode.torch}
 			/>
 		</View>
 	)

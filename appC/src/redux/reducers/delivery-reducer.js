@@ -6,6 +6,7 @@ import {
 	selectDeliveryStart,
 	addPackageToDeliverySuccess,
 	getPackageDataSuccess,
+	updateDeliveryPackageSuccess,
 } from '../actions/delivery-action'
 
 import { handleActions } from 'redux-actions'
@@ -50,6 +51,15 @@ const deliveryReducer = handleActions(
 			...state,
 			delivery: {
 				packages: { ...state.delivery.packages, ...payload },
+			},
+		}),
+		[updateDeliveryPackageSuccess]: (state, { payload }) => ({
+			...state,
+			delivery: {
+				packages: {
+					...state.delivery.packages,
+					[payload.packageId]: { ...state.delivery.packages[payload.packageId], ...payload },
+				},
 			},
 		}),
 	},
