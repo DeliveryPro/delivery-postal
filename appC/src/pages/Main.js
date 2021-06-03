@@ -104,7 +104,6 @@ const Home = (props) => {
 	useEffect(() => {
 		dispatch(getAllUserDeliveryAction(uid))
 	}, [])
-	console.log(`deliveries`, deliveries)
 
 	useEffect(() => {
 		deliveryId.length && dispatch(updateUserDeliveriesAction(uid, deliveryId))

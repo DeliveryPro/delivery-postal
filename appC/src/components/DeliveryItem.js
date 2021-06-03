@@ -7,6 +7,7 @@ import Minus from '../assets/minus.svg'
 import { DELIVERY_PAGE } from '../constants/pages'
 import { useDispatch } from 'react-redux'
 import { selectDeliveryAction } from '../redux/actions/delivery-action'
+import STATUSES from '../constants/statuses'
 
 const useStyles = StyleSheet.create((theme) => ({
 	root: {
@@ -57,7 +58,7 @@ const useStyles = StyleSheet.create((theme) => ({
 const DeliveryItem = ({
 	item: {
 		id,
-		status = 'in progress',
+		status,
 		description,
 	},
 	navigation,
@@ -65,14 +66,14 @@ const DeliveryItem = ({
 	const classes = useStyles()
 
     const dispatch = useDispatch()
-	if (status === 'delivered') {
+	if (status === STATUSES.COMPLETED) {
 		classes.root = { ...classes.root, ...classes.inactive }
 		classes.text = { ...classes.text, ...classes.inactive }
 	}
 
 	const toPage = (page) => () => {
-        navigation.navigate(page)
         dispatch(selectDeliveryAction(id))
+        navigation.navigate(page)
     }
 
 	// const codeSplitter = (text) => (text?.length > 26 ? `${text.substr(0, 26).trim()} ...` : text)

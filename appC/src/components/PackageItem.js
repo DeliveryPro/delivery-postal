@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native'
 import Package from '../assets/package.svg'
 import { PRIMARY_COLOR, UNDERLAY_COLOR } from '../constants/colors'
 import Minus from '../assets/minus.svg'
+import STATUSES from '../constants/statuses'
 
 const useStyles = StyleSheet.create((theme) => ({
 	root: {
@@ -51,7 +52,7 @@ const useStyles = StyleSheet.create((theme) => ({
 	},
 }))
 
-const PackageItem = ({ item: { id, status = 'in progress', address_from, address_to, description } }) => {
+const PackageItem = ({ item: { id, address_from, address_to, description, status } }) => {
 	const {
 		details: { vicinity: from },
 	} = address_from || { details: { vicinity: '' } }
@@ -60,7 +61,7 @@ const PackageItem = ({ item: { id, status = 'in progress', address_from, address
 	} = address_to || { details: { vicinity: '' } }
 
 	const classes = useStyles()
-	if (status === 'delivered') {
+	if (status === STATUSES.COMPLETED) {
 		classes.root = { ...classes.root, ...classes.inactive }
 		classes.text = { ...classes.text, ...classes.inactive }
 	}
@@ -83,7 +84,7 @@ const PackageItem = ({ item: { id, status = 'in progress', address_from, address
 			</View>
 			<View style={classes.item}>
 				<Text style={{ ...classes.description, ...classes.text }}>{codeSplitter(description)}</Text>
-				<Text style={classes.text}>{status}</Text>
+				{/* <Text style={classes.text}>{status}</Text> */}
 			</View>
 		</View>
 	)

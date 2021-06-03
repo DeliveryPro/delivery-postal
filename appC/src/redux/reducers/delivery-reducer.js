@@ -13,7 +13,8 @@ import { handleActions } from 'redux-actions'
 const defaultState = {
 	deliveryId: '',
 	delivery: {
-		packages: null,
+		packages: {},
+		status: '',
 	},
 	ids: {},
 }

@@ -5,6 +5,7 @@ import Button from '../components/Button'
 import PackageItem from '../components/PackageItem'
 import QrCodeScanner from '../components/QrCodeScanner'
 import { PRIMARY } from '../constants/buttonTypes'
+import { MAIN } from '../constants/pages'
 import STATUSES from '../constants/statuses'
 import { addPackageToDeliveryAction, updateDeliveryStatusAction } from '../redux/actions/delivery-action'
 import { getDeliveryDataByIdSelector, getDeliveryIdSelector } from '../redux/selectors/delivery-selector'
@@ -22,22 +23,26 @@ const useStyles = StyleSheet.create((theme) => ({
 	},
 }))
 
-const DeliveryPage = () => {
+const DeliveryPage = ({navigation}) => {
 	const [isQrScannerOpen, setQrScannerOpen] = useState(false)
 	const classes = useStyles()
 
 	const dispatch = useDispatch()
 	const deliveryId = useSelector(getDeliveryIdSelector)
 	const delivery = useSelector(getDeliveryDataByIdSelector)
-	const { packages, status } = delivery
-	// console.log(`deliveryData`, packages, delivery)
+	const { packages = {}, status = 'loading' } = delivery || { packages: {}, status: 'loading' }
+
+	// console.log(`deliveryData`, packages)
 
 	const addNew = () => {
 		setQrScannerOpen(true)
 	}
 
+	const toPage = (page) => navigation.navigation(page)
+
 	const startDelivery = () => {
 		dispatch(updateDeliveryStatusAction(deliveryId, STATUSES.IN_PROGRESS))
+		toPage(MAIN)
 	}
 
 	const validateId = (id) => {
@@ -48,13 +53,13 @@ const DeliveryPage = () => {
 		}
 	}
 	if (isQrScannerOpen) return <QrCodeScanner cb={validateId} />
-	// console.log(`packages`, packages)
+
 	return (
 		<View style={classes.root}>
 			<Text>DeliveryId: {deliveryId}</Text>
 			<Text>Status: {status}</Text>
 
-			{packages && (
+			{!!Object.keys(packages).length && (
 				<FlatList
 					key={(item) => item.id}
 					data={Object.values(packages)}
@@ -67,7 +72,7 @@ const DeliveryPage = () => {
 					<Button onPress={addNew} text="Add package to delivery" />
 				</View>
 			)}
-			{status === STATUSES.NEW && Object.keys(packages).length && (
+			{status === STATUSES.NEW && !!Object.keys(packages) && (
 				<View style={classes.buttonContainer}>
 					<Button type={PRIMARY} onPress={startDelivery} text="Start delivery" />
 				</View>
