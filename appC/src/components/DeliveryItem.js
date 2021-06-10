@@ -35,6 +35,7 @@ const useStyles = StyleSheet.create((theme) => ({
 	id: {
 		fontSize: 18,
 		fontWeight: 'bold',
+		marginLeft: 10,
 	},
 	idContainer: {
 		paddingLeft: 0,
@@ -42,7 +43,7 @@ const useStyles = StyleSheet.create((theme) => ({
 	item: {
 		display: 'flex',
 		flexDirection: 'row',
-		justifyContent: 'space-between',
+		justifyContent: 'flex-start',
 		paddingLeft: 10,
 		paddingBottom: 5,
 	},
@@ -50,46 +51,37 @@ const useStyles = StyleSheet.create((theme) => ({
 		color: UNDERLAY_COLOR,
 		backgroundColor: '#eee',
 	},
-	description: {
-		color: PRIMARY_COLOR,
+	status: {
+		marginLeft: 10,
 	},
 }))
 
-const DeliveryItem = ({
-	item: {
-		id,
-		status,
-		description,
-	},
-	navigation,
-}) => {
+const DeliveryItem = ({ item: { id, status, description }, navigation }) => {
 	const classes = useStyles()
 
-    const dispatch = useDispatch()
+	const dispatch = useDispatch()
 	if (status === STATUSES.COMPLETED) {
 		classes.root = { ...classes.root, ...classes.inactive }
 		classes.text = { ...classes.text, ...classes.inactive }
 	}
 
 	const toPage = (page) => () => {
-        dispatch(selectDeliveryAction(id))
-        navigation.navigate(page)
-    }
+		dispatch(selectDeliveryAction(id))
+		navigation.navigate(page)
+	}
 
-	// const codeSplitter = (text) => (text?.length > 26 ? `${text.substr(0, 26).trim()} ...` : text)
 	return (
-		<TouchableOpacity onPress={ toPage(DELIVERY_PAGE)}>
+		<TouchableOpacity onPress={toPage(DELIVERY_PAGE)}>
 			<View style={classes.root}>
 				<View style={classes.item}>
 					<View style={{ ...classes.item, ...classes.idContainer }}>
 						<Package stroke={PRIMARY_COLOR} width={20} />
 						<Text style={{ ...classes.id, ...classes.text }}>{id}</Text>
 					</View>
-
 				</View>
 				<View style={classes.item}>
-					{/* <Text style={{ ...classes.description, ...classes.text }}>{codeSplitter(description)}</Text> */}
-					<Text style={classes.text}>{status}</Text>
+					<Text style={classes.text}>Status:</Text>
+					<Text style={{ ...classes.text, ...classes.status }}>{status}</Text>
 				</View>
 			</View>
 		</TouchableOpacity>

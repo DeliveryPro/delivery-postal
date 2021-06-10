@@ -10,7 +10,6 @@ import ForgotPasswordScreen from './pages/ForgotPassword'
 import ConfirmPasswordScreen from './pages/ConfirmPassword'
 import MapScreen from './pages/Map'
 import QRCodeScannerScreen from './pages/QRCodeScanner'
-import NewPackageScreen from './pages/AddNewDelivery'
 import DeliveryPageScreen from './pages/DeliveryPage'
 
 import {
@@ -23,7 +22,6 @@ import {
 	FORGOT_PASSWORD,
 	DELIVERY_INFO,
 	CONFIRM_PASSWORD,
-	NEW_PACKAGE,
 	DELIVERY_PAGE,
 } from './constants/pages'
 
@@ -47,7 +45,6 @@ const AuthRoutes = () => (
 	<Stack.Navigator>
 		<Stack.Screen name={MAIN} component={MainScreen} options={HeaderShown} />
 		<Stack.Screen name={MAP} component={MapScreen} />
-		<Stack.Screen name={NEW_PACKAGE} component={NewPackageScreen} />
 		<Stack.Screen name={PROFILE} component={ProfileScreen} />
 		<Stack.Screen name={DELIVERY_INFO} component={ProfileScreen} />
 		<Stack.Screen name={DELIVERY_PAGE} component={DeliveryPageScreen} />

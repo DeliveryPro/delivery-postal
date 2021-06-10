@@ -47,6 +47,9 @@ const useStyles = StyleSheet.create((theme) => ({
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
+		position: 'absolute',
+		bottom: 100,
+		left: '15%',
 	},
 }))
 
@@ -106,6 +109,10 @@ const Home = (props) => {
 	}, [])
 
 	useEffect(() => {
+		checkIsAvailableNew()
+	}, [deliveries])
+
+	useEffect(() => {
 		deliveryId.length && dispatch(updateUserDeliveriesAction(uid, deliveryId))
 	}, [deliveryId])
 
@@ -134,6 +141,12 @@ const Home = (props) => {
 			)
 		}
 	}
+	const checkIsAvailableNew = () => {
+		Object.values(deliveries).map(({ status }) => {
+			console.log('status => ', status)
+		})
+	}
+
 	// console.log(`interval`, interval)
 	const createNewDelivery = () => {
 		dispatch(createNewDeliveryAction(uid))

@@ -67,11 +67,16 @@ const DeliveryPage = ({ navigation }) => {
 
 			{!!Object.keys(packages).length && (
 				<FlatList
-					key={(item) => item.id}
 					data={Object.keys(packages)}
-					keyExtractor={({ item }) => item}
+					keyExtractor={(item) => item}
 					renderItem={({ item }) => (
-						<PackageItem packageId={item} deliveryId={deliveryId} data={packages[item]} navigation={navigation} />
+						<PackageItem
+							{...item}
+							packageId={item}
+							deliveryId={deliveryId}
+							data={packages[item]}
+							navigation={navigation}
+						/>
 					)}
 				/>
 			)}

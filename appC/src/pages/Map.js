@@ -50,6 +50,8 @@ const Map = (props) => {
 						longitudeDelta: 0.0421,
 					}}
 				>
+					{coords && <Marker title="Your Location" coordinate={coords} />}
+
 					{address_to && (
 						<>
 							<Marker
@@ -59,7 +61,6 @@ const Map = (props) => {
 									longitude: address_to.coordinates.lng,
 								}}
 							/>
-							{coords && <Marker title="Your Location" coordinate={coords} />}
 
 							<MapViewDirections
 								origin={coords}

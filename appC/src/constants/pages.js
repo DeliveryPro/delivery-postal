@@ -15,6 +15,5 @@ export const NEW_PACKAGE = 'Add new Delivery'
 
 //additional pages
 export const DELIVERY_INFO ='DeliveryInfo'
-export const ADD_NEW_DELIVERY ='AddNewDelivery'
 
 export const DELIVERY_PAGE = 'Delivery Page'

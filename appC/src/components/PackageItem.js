@@ -14,7 +14,7 @@ import { MAP } from '../constants/pages'
 const useStyles = StyleSheet.create((theme) => ({
 	root: {
 		display: 'flex',
-		height: 90,
+		height: 100,
 		margin: 5,
 		marginBottom: 0,
 		padding: 10,
@@ -97,11 +97,12 @@ const useStyles = StyleSheet.create((theme) => ({
 const APPROVE_DELIVERY = 'APPROVE_DELIVERY'
 const DECLINE_DELIVERY = 'DECLINE_DELIVERY'
 const VIEW_ON_MAP = 'VIEW_ON_MAP'
+const BACK = 'BACK'
 
 const PackageItem = ({
 	deliveryId,
 	packageId,
-	data: { id, address_from, address_to, description, status, receiver_uid },
+	data: { id, address_to, status, receiver_uid },
 	data,
 	navigation,
 }) => {
@@ -109,9 +110,6 @@ const PackageItem = ({
 	const [isQrCodeScannerOpen, setQrCodeScannerOpen] = useState(false)
 	const dispatch = useDispatch()
 
-	const {
-		details: { vicinity: from },
-	} = address_from || { details: { vicinity: '' } }
 	const {
 		details: { vicinity: to },
 	} = address_to || { details: { vicinity: '' } }
@@ -122,8 +120,6 @@ const PackageItem = ({
 		classes.root = { ...classes.root, ...classes.inactive }
 		classes.text = { ...classes.text, ...classes.inactive }
 	}
-
-	const codeSplitter = (text) => (text?.length > 26 ? `${text.substr(0, 26).trim()} ...` : text)
 
 	const modalToggle = () => setPackageActionsVisible(!packageActionsVisible)
 
@@ -168,19 +164,20 @@ const PackageItem = ({
 				<>
 					<View style={classes.item}>
 						<View style={{ ...classes.item, ...classes.idContainer }}>
-							<Package stroke={PRIMARY_COLOR} width={20} />
-							<Text style={{ ...classes.id, ...classes.text }}>{id}</Text>
+							<Text style={{ ...classes.id, ...classes.text }}>ID: {packageId}</Text>
 						</View>
-
+					</View>
+					<View style={classes.item}>
 						<View style={classes.pathContainer}>
-							<Text style={classes.text}>{from}</Text>
-							<Minus width={60} />
+							<Text style={classes.text}>Receiver: </Text>
 							<Text style={classes.text}>{to}</Text>
 						</View>
 					</View>
 					<View style={classes.item}>
-						<Text style={{ ...classes.description, ...classes.text }}>{codeSplitter(description)}</Text>
-						<Text style={classes.text}>{status}</Text>
+						<View style={classes.pathContainer}>
+							<Text style={classes.text}>Status: </Text>
+							<Text style={classes.text}>{status}</Text>
+						</View>
 					</View>
 				</>
 			</TouchableHighlight>
@@ -197,10 +194,9 @@ const ModalContent = ({ visible, closeModal, selectAction, toMap }) => {
 
 	const selectItem = (type) => () => {
 		setConfirmAction(type)
-		if (type === VIEW_ON_MAP) {
-			toMap()
-			return
-		}
+		if (type === VIEW_ON_MAP) return toMap()
+		if (type === BACK) return closeModal()
+
 		toggleConfirmation()
 	}
 
@@ -243,6 +239,11 @@ const ModalContent = ({ visible, closeModal, selectAction, toMap }) => {
 					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(VIEW_ON_MAP)}>
 						<View style={classes.modalItem}>
 							<Text style={classes.modalItemText}>View on Map</Text>
+						</View>
+					</TouchableHighlight>
+					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(BACK)}>
+						<View style={classes.modalItem}>
+							<Text style={classes.modalItemText}>Back</Text>
 						</View>
 					</TouchableHighlight>
 				</View>

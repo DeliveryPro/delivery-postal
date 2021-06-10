@@ -10,7 +10,9 @@ const useStyles = StyleSheet.create((theme) => ({
     buttonContainer: {
         display: 'flex',
         height: 40,
+        minWidth:250,
         justifyContent: 'center',
+        alignItems:'center',
         backgroundColor: 'red',
         borderRadius: 4,
     },

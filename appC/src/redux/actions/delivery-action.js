@@ -52,6 +52,7 @@ export const getAllUserDeliveryAction = (uid) => async (dispatch) => {
 	try {
 		const res = await Delivery.getAllUserDelivery(uid)
 		if (res) {
+			console.log(` getALlUserDeliveryAction res`, res)
 			dispatch(getALlUserDeliverySuccess(res))
 		}
 	} catch (e) {
@@ -158,7 +159,6 @@ export const updateDeliveryPackageAction =
 		try {
 			const res = await Delivery.updateDeliveryPackageStatus({ deliveryId, packageId, status })
 			if (res) {
-				console.log(`updateDeliveryPackageAction`, res, { [packageId]: status })
 				dispatch(updateDeliveryPackageSuccess({ packageId, status }))
 			}
 		} catch (e) {
