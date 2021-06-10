@@ -16,6 +16,8 @@ import {
 	UPDATE_DELIVERY_STATUS_START,
 	UPDATE_DELIVERY_PACKAGE_STATUS_SUCCESS,
 	UPDATE_DELIVERY_PACKAGE_STATUS_START,
+	SET_MAP_ACTION_SUCCESS,
+	CLEAR_MAP_ITEM_SUCCESS,
 } from '../types'
 
 import { errorHandler } from './error-action'
@@ -164,3 +166,17 @@ export const updateDeliveryPackageAction =
 			dispatch(errorHandler(CREATE_NEW_DELIVERY_PAGE, e))
 		}
 	}
+
+export const setMapItemSuccess = createAction(SET_MAP_ACTION_SUCCESS)
+
+export const setMapItemAction = (data) => (dispatch) => {
+	logger('setMapItemAction', data)
+	dispatch(setMapItemSuccess(data))
+}
+
+export const clearMapItemSuccess = createAction(CLEAR_MAP_ITEM_SUCCESS)
+
+export const clearMapItem = () => (dispatch) => {
+	logger('setMapItemAction', data)
+	dispatch(clearMapItemSuccess())
+}

@@ -7,6 +7,8 @@ import {
 	addPackageToDeliverySuccess,
 	getPackageDataSuccess,
 	updateDeliveryPackageSuccess,
+	clearMapItemSuccess,
+	setMapItemSuccess,
 } from '../actions/delivery-action'
 
 import { handleActions } from 'redux-actions'
@@ -18,6 +20,7 @@ const defaultState = {
 		status: '',
 	},
 	ids: {},
+	mapItem: {},
 }
 
 const deliveryReducer = handleActions(
@@ -61,6 +64,14 @@ const deliveryReducer = handleActions(
 					[payload.packageId]: { ...state.delivery.packages[payload.packageId], ...payload },
 				},
 			},
+		}),
+		[setMapItemSuccess]: (state, { payload }) => ({
+			...state,
+			mapItem: payload,
+		}),
+		[clearMapItemSuccess]: (state) => ({
+			...state,
+			mapItem: {},
 		}),
 	},
 	defaultState,

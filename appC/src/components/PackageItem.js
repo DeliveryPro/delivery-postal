@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, Modal, TouchableHighlight, Toast, ToastAndroid } from 'react-native'
+import { View, Text, StyleSheet, Modal, TouchableHighlight, ToastAndroid } from 'react-native'
 
 import Package from '../assets/package.svg'
 import { PRIMARY_COLOR, UNDERLAY_COLOR } from '../constants/colors'
@@ -8,7 +8,8 @@ import STATUSES from '../constants/statuses'
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants/screen'
 import QrCodeScanner from './QrCodeScanner'
 import { useDispatch } from 'react-redux'
-import { updateDeliveryPackageAction } from '../redux/actions/delivery-action'
+import { setMapItemAction, updateDeliveryPackageAction } from '../redux/actions/delivery-action'
+import { MAP } from '../constants/pages'
 
 const useStyles = StyleSheet.create((theme) => ({
 	root: {
@@ -95,8 +96,15 @@ const useStyles = StyleSheet.create((theme) => ({
 
 const APPROVE_DELIVERY = 'APPROVE_DELIVERY'
 const DECLINE_DELIVERY = 'DECLINE_DELIVERY'
+const VIEW_ON_MAP = 'VIEW_ON_MAP'
 
-const PackageItem = ({ deliveryId, packageId, data: { id, address_from, address_to, description, status, receiver_uid } }) => {
+const PackageItem = ({
+	deliveryId,
+	packageId,
+	data: { id, address_from, address_to, description, status, receiver_uid },
+	data,
+	navigation,
+}) => {
 	const [packageActionsVisible, setPackageActionsVisible] = useState(false)
 	const [isQrCodeScannerOpen, setQrCodeScannerOpen] = useState(false)
 	const dispatch = useDispatch()
@@ -122,7 +130,6 @@ const PackageItem = ({ deliveryId, packageId, data: { id, address_from, address_
 	const validateId = (uid) => {
 		setQrCodeScannerOpen(false)
 		setPackageActionsVisible(false)
-		console.log('approved', uid, receiver_uid, uid === receiver_uid)
 		if (uid !== receiver_uid) {
 			ToastAndroid.show('User id mismatch', ToastAndroid.SHORT)
 			return
@@ -139,11 +146,24 @@ const PackageItem = ({ deliveryId, packageId, data: { id, address_from, address_
 		}
 	}
 
+	const toPage = (page) => navigation.navigate(page)
+
+	const toMap = () => {
+		dispatch(setMapItemAction(data))
+		modalToggle()
+		toPage(MAP)
+	}
+
 	if (isQrCodeScannerOpen) return <QrCodeScanner cb={validateId} noTorch />
 
 	return (
 		<View style={classes.root}>
-			<ModalContent visible={packageActionsVisible} closeModal={modalToggle} selectAction={selectAction} />
+			<ModalContent
+				visible={packageActionsVisible}
+				closeModal={modalToggle}
+				selectAction={selectAction}
+				toMap={toMap}
+			/>
 			<TouchableHighlight onPress={modalToggle}>
 				<>
 					<View style={classes.item}>
@@ -168,7 +188,7 @@ const PackageItem = ({ deliveryId, packageId, data: { id, address_from, address_
 	)
 }
 
-const ModalContent = ({ visible, closeModal, selectAction }) => {
+const ModalContent = ({ visible, closeModal, selectAction, toMap }) => {
 	const [showConfirm, setConfirm] = useState(false)
 	const [confirmAction, setConfirmAction] = useState('')
 	const classes = useStyles()
@@ -177,6 +197,10 @@ const ModalContent = ({ visible, closeModal, selectAction }) => {
 
 	const selectItem = (type) => () => {
 		setConfirmAction(type)
+		if (type === VIEW_ON_MAP) {
+			toMap()
+			return
+		}
 		toggleConfirmation()
 	}
 
@@ -208,14 +232,17 @@ const ModalContent = ({ visible, closeModal, selectAction }) => {
 				<View style={classes.modal}>
 					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(APPROVE_DELIVERY)}>
 						<View style={classes.modalItem}>
-							{/* <Folder width={30} /> */}
 							<Text style={classes.modalItemText}>Approve</Text>
 						</View>
 					</TouchableHighlight>
 					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(DECLINE_DELIVERY)}>
 						<View style={classes.modalItem}>
-							{/* <Camera width={30} /> */}
 							<Text style={classes.modalItemText}>Decline</Text>
+						</View>
+					</TouchableHighlight>
+					<TouchableHighlight underlayColor={UNDERLAY_COLOR} onPress={selectItem(VIEW_ON_MAP)}>
+						<View style={classes.modalItem}>
+							<Text style={classes.modalItemText}>View on Map</Text>
 						</View>
 					</TouchableHighlight>
 				</View>

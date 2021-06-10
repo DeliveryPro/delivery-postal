@@ -86,8 +86,8 @@ export const sendUserPositionAction = (userId, data) => async (dispatch) => {
 	logger('sendUserPositionAction')
 	dispatch(sendUserPositionStart())
 	try {
-		const res = await Users.updateUserPosition(userId, data)
-		if (res) dispatch(sendUserPositionSuccess(res))
+		Users.updateUserPosition(userId, data)
+		dispatch(sendUserPositionSuccess(data))
 	} catch (e) {
 		dispatch(errorHandler(USERS_PAGE, e))
 	}

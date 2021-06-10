@@ -71,7 +71,7 @@ const DeliveryPage = ({ navigation }) => {
 					data={Object.keys(packages)}
 					keyExtractor={({ item }) => item}
 					renderItem={({ item }) => (
-						<PackageItem packageId={item} deliveryId={deliveryId} data={packages[item]} />
+						<PackageItem packageId={item} deliveryId={deliveryId} data={packages[item]} navigation={navigation} />
 					)}
 				/>
 			)}

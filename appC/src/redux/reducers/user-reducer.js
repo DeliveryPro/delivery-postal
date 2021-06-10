@@ -11,7 +11,7 @@ import {
 	updateUserPhotoSuccess,
 	sendUserPositionStart,
 	sendUserPositionSuccess,
-    updateUserDeliveriesSuccess,
+	updateUserDeliveriesSuccess,
 } from '../actions/user-action'
 
 const defaultState = {
@@ -21,6 +21,7 @@ const defaultState = {
 	isUserPhotoUploading: false,
 	userPositionUpdated: '',
 	data: {},
+	userPosition: {},
 }
 
 const notificationReducer = handleActions(
@@ -59,8 +60,9 @@ const notificationReducer = handleActions(
 			...state,
 			isUserPhotoUploading: false,
 		}),
-		[sendUserPositionSuccess]: (state) => ({
+		[sendUserPositionSuccess]: (state, { payload }) => ({
 			...state,
+			userPosition: payload,
 			userPositionUpdated: new Date().toTimeString(),
 		}),
 		[updateUserDeliveriesSuccess]: (state) => ({

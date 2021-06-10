@@ -7,3 +7,5 @@ export const getDeliveryIdSelector = createSelector(deliveryState, ({ deliveryId
 export const getAllDeliveriesSelector = createSelector(deliveryState, ({ ids }) => ids)
 
 export const getDeliveryDataByIdSelector = createSelector(deliveryState, ({ delivery }) => delivery)
+
+export const getMapDataSelector = createSelector(deliveryState, ({ mapItem }) => mapItem)

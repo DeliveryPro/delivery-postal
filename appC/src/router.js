@@ -46,7 +46,7 @@ const NoHeader = () => ({
 const AuthRoutes = () => (
 	<Stack.Navigator>
 		<Stack.Screen name={MAIN} component={MainScreen} options={HeaderShown} />
-		<Stack.Screen name={MAP} component={MapScreen} options={HeaderShown} />
+		<Stack.Screen name={MAP} component={MapScreen} />
 		<Stack.Screen name={NEW_PACKAGE} component={NewPackageScreen} />
 		<Stack.Screen name={PROFILE} component={ProfileScreen} />
 		<Stack.Screen name={DELIVERY_INFO} component={ProfileScreen} />
